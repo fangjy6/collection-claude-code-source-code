@@ -26,8 +26,7 @@ A minimal Python implementation of Claude Code in ~1300 lines, supporting Claude
 
 ---
 
-  * [🔥🔥🔥 News (Pacific Time)](#-------news--pacific-time-)
-- [Nano Claude Code](#nano-claude-code)
+## Content
   * [Features](#features)
   * [Supported Models](#supported-models)
     + [Closed-Source (API)](#closed-source--api-)
