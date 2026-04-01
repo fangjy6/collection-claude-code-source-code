@@ -21,6 +21,7 @@
 <center style="color:#000000;text-decoration:underline"> </center>
  </div>
 
+---
 
 ## 🔥🔥🔥 News (Pacific Time)
 - 01:47 PM, Apr 01, 2026: Support VLLM inference (**~2000** lines of Python Code)
@@ -28,10 +29,9 @@
 - 09:50 AM, Apr 01, 2026: Support more **closed-source** models: Claude, GPT, Gemini. (**~1300** lines of Python Code)
 - 08:23 AM, Apr 01, 2026: Release the initial version of Nano Claude Code (**~900 lines** of Python Code)
 
+---
 
 # Nano Claude Code
-
-![demo](demo.gif)
 
 A minimal Python implementation of Claude Code in ~900 lines (Initial version), **supporting Claude, GPT, Gemini, Kimi, Qwen, Zhipu, DeepSeek, and local open-source models via Ollama or any OpenAI-compatible endpoint.**
 
