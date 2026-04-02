@@ -485,6 +485,7 @@ register_tool(ToolDef(
 
 register_tool(ToolDef(
     name="MemoryDelete",
+
     schema={
         "name": "MemoryDelete",
         "description": "Delete a persistent memory entry by name.",
@@ -498,5 +499,112 @@ register_tool(ToolDef(
     },
     func=_memory_delete,
     read_only=False,
+    concurrent_safe=True,
+))
+
+
+# ── Sub-agent tools ─────────────────────────────────────────────────────
+
+_agent_manager = None
+
+
+def _get_agent_manager():
+    global _agent_manager
+    if _agent_manager is None:
+        from subagent import SubAgentManager
+        _agent_manager = SubAgentManager()
+    return _agent_manager
+
+
+def _agent_tool(params, config):
+    mgr = _get_agent_manager()
+    prompt = params["prompt"]
+    wait = params.get("wait", True)
+    system_prompt = config.get("system_prompt", "You are a helpful assistant.")
+    task = mgr.spawn(prompt, config, system_prompt, depth=config.get("_depth", 0))
+    if wait:
+        mgr.wait(task.id, timeout=300)
+        return task.result or f"Task {task.id} finished with status: {task.status}"
+    return f"Task spawned: {task.id} (status: {task.status})"
+
+
+def _check_agent_result(params, config):
+    mgr = _get_agent_manager()
+    task_id = params["task_id"]
+    task = mgr.tasks.get(task_id)
+    if task is None:
+        return f"Error: no task with id '{task_id}'"
+    result_str = f"Status: {task.status}"
+    if task.result:
+        result_str += f"\nResult: {task.result}"
+    return result_str
+
+
+def _list_agent_tasks(params, config):
+    mgr = _get_agent_manager()
+    tasks = mgr.list_tasks()
+    if not tasks:
+        return "No sub-agent tasks."
+    lines = ["ID | Status | Prompt"]
+    lines.append("---|--------|------")
+    for t in tasks:
+        prompt_short = t.prompt[:60] + ("..." if len(t.prompt) > 60 else "")
+        lines.append(f"{t.id} | {t.status} | {prompt_short}")
+    return "\n".join(lines)
+
+
+register_tool(ToolDef(
+    name="Agent",
+    schema={
+        "name": "Agent",
+        "description": (
+            "Spawn a sub-agent to handle a task. The sub-agent runs in a separate "
+            "thread with its own conversation. Use wait=false to run in background."
+        ),
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "prompt": {"type": "string", "description": "Task prompt for the sub-agent"},
+                "model":  {"type": "string", "description": "Model override (optional)"},
+                "wait":   {"type": "boolean", "description": "Block until complete (default: true)"},
+            },
+            "required": ["prompt"],
+        },
+    },
+    func=_agent_tool,
+    read_only=False,
+    concurrent_safe=False,
+))
+
+register_tool(ToolDef(
+    name="CheckAgentResult",
+    schema={
+        "name": "CheckAgentResult",
+        "description": "Check the status and result of a spawned sub-agent task.",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "task_id": {"type": "string", "description": "Task ID returned by Agent tool"},
+            },
+            "required": ["task_id"],
+        },
+    },
+    func=_check_agent_result,
+    read_only=True,
+    concurrent_safe=True,
+))
+
+register_tool(ToolDef(
+    name="ListAgentTasks",
+    schema={
+        "name": "ListAgentTasks",
+        "description": "List all sub-agent tasks and their statuses.",
+        "input_schema": {
+            "type": "object",
+            "properties": {},
+        },
+    },
+    func=_list_agent_tasks,
+    read_only=True,
     concurrent_safe=True,
 ))

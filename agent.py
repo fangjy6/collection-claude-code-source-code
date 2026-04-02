@@ -57,16 +57,24 @@ def run(
     state: AgentState,
     config: dict,
     system_prompt: str,
+    depth: int = 0,
+    cancel_check=None,
 ) -> Generator:
     """
     Multi-turn agent loop (generator).
     Yields: TextChunk | ThinkingChunk | ToolStart | ToolEnd |
             PermissionRequest | TurnDone
+
+    Args:
+        depth: sub-agent nesting depth, 0 for top-level
+        cancel_check: callable returning True to abort the loop early
     """
     # Append user turn in neutral format
     state.messages.append({"role": "user", "content": user_message})
 
     while True:
+        if cancel_check and cancel_check():
+            return
         state.turn_count += 1
         assistant_turn: AssistantTurn | None = None
 
