@@ -293,6 +293,20 @@ TOOL_SCHEMAS = [
             "required": ["question"],
         },
     },
+    {
+        "name": "SleepTimer",
+        "description": (
+            "Schedule a silent background timer. When the timer finishes, it injects an automated prompt into the chat history: "
+            "'(System Automated Event): The timer has finished...' so you can seamlessly wake up and execute deferred monitoring tasks."
+        ),
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "seconds": {"type": "integer", "description": "Number of seconds to sleep before waking up."}
+            },
+            "required": ["seconds"],
+        },
+    },
 ]
 
 # ── Safe bash commands (never ask permission) ───────────────────────────────
@@ -833,6 +847,22 @@ def drain_pending_questions() -> bool:
     return True
 
 
+def _sleeptimer(seconds: int, config: dict) -> str:
+    import threading
+    cb = config.get("_run_query_callback")
+    if not cb:
+        return "Error: Internal callback missing, nano_claude did not provide _run_query_callback"
+        
+    def worker():
+        import time
+        time.sleep(seconds)
+        cb("(System Automated Event): The timer has finished. Please wake up, perform any pending monitoring checks and report to the user now.")
+        
+    t = threading.Thread(target=worker, daemon=True)
+    t.start()
+    return f"Timer successfully scheduled for {seconds} seconds. You can output your final thoughts and end your turn. You will be automatically awakened."
+
+
 # ── Dispatcher (backward-compatible wrapper) ──────────────────────────────
 
 def execute_tool(
@@ -979,6 +1009,13 @@ def _register_builtins() -> None:
             ),
             read_only=True,
             concurrent_safe=False,
+        ),
+        ToolDef(
+            name="SleepTimer",
+            schema=_schemas["SleepTimer"],
+            func=lambda p, c: _sleeptimer(p["seconds"], c),
+            read_only=False,
+            concurrent_safe=True,
         ),
     ]
     for td in _tool_defs:

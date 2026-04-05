@@ -67,7 +67,7 @@ import textwrap
 from pathlib import Path
 from datetime import datetime
 from typing import Optional, Union
-
+import threading
 # ── Optional rich for markdown rendering ──────────────────────────────────
 try:
     from rich.console import Console
@@ -1136,54 +1136,68 @@ def repl(config: dict, initial_prompt: str = None):
         print(clr("╰──────────────────────────────────────────────────╯", "dim"))
         print()
 
-    def run_query(user_input: str):
+    query_lock = threading.Lock()
+    
+    def run_query(user_input: str, is_background: bool = False):
         nonlocal verbose
-        verbose = config.get("verbose", False)
+        
+        with query_lock:
+            verbose = config.get("verbose", False)
+    
+            # Rebuild system prompt each turn (picks up cwd changes, etc.)
+            system_prompt = build_system_prompt()
+            
+            if is_background:
+                print(clr("\n\n[Background Event Triggered]", "yellow"))
+    
+            print(clr("\n╭─ Claude ", "dim") + clr("●", "green") + clr(" ─────────────────────────", "dim"))
+            print(clr("│ ", "dim"), end="", flush=True)
+    
+            thinking_started = False
+    
+            for event in run(user_input, state, config, system_prompt):
+                if isinstance(event, TextChunk):
+                    stream_text(event.text)
+    
+                elif isinstance(event, ThinkingChunk):
+                    if verbose:
+                        if not thinking_started:
+                            print(clr("\n  [thinking]", "dim"))
+                            thinking_started = True
+                        stream_thinking(event.text, verbose)
+    
+                elif isinstance(event, ToolStart):
+                    flush_response()
+                    print_tool_start(event.name, event.inputs, verbose)
+    
+                elif isinstance(event, PermissionRequest):
+                    event.granted = ask_permission_interactive(event.description, config)
+    
+                elif isinstance(event, ToolEnd):
+                    print_tool_end(event.name, event.result, verbose)
+                    # Print prefix for next text
+                    print(clr("│ ", "dim"), end="", flush=True)
+    
+                elif isinstance(event, TurnDone):
+                    if verbose:
+                        print(clr(
+                            f"\n  [tokens: +{event.input_tokens} in / "
+                            f"+{event.output_tokens} out]", "dim"
+                        ))
 
-        # Rebuild system prompt each turn (picks up cwd changes, etc.)
-        system_prompt = build_system_prompt()
+            flush_response()
+            print(clr("╰──────────────────────────────────────────────", "dim"))
+            print()
+            
+            # If this was a background task, we redraw the prompt for the user
+            if is_background:
+                print(clr("\n[claude-code-local] ❯ ", "yellow"), end="", flush=True)
 
-        print(clr("\n╭─ Claude ", "dim") + clr("●", "green") + clr(" ─────────────────────────", "dim"))
-        print(clr("│ ", "dim"), end="", flush=True)
-
-        thinking_started = False
-
-        for event in run(user_input, state, config, system_prompt):
-            if isinstance(event, TextChunk):
-                stream_text(event.text)
-
-            elif isinstance(event, ThinkingChunk):
-                if verbose:
-                    if not thinking_started:
-                        print(clr("\n  [thinking]", "dim"))
-                        thinking_started = True
-                    stream_thinking(event.text, verbose)
-
-            elif isinstance(event, ToolStart):
-                flush_response()
-                print_tool_start(event.name, event.inputs, verbose)
-
-            elif isinstance(event, PermissionRequest):
-                event.granted = ask_permission_interactive(event.description, config)
-
-            elif isinstance(event, ToolEnd):
-                print_tool_end(event.name, event.result, verbose)
-                # Print prefix for next text
-                print(clr("│ ", "dim"), end="", flush=True)
-
-            elif isinstance(event, TurnDone):
-                if verbose:
-                    print(clr(
-                        f"\n  [tokens: +{event.input_tokens} in / "
-                        f"+{event.output_tokens} out]", "dim"
-                    ))
-
-        flush_response()
-        print(clr("╰──────────────────────────────────────────────", "dim"))
-        print()
         # Drain any AskUserQuestion prompts raised during this turn
         from tools import drain_pending_questions
         drain_pending_questions()
+
+    config["_run_query_callback"] = lambda msg: run_query(msg, is_background=True)
 
     # ── Main loop ──
     if initial_prompt:
