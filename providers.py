@@ -540,6 +540,11 @@ def stream_ollama(
                 continue
             
             msg = data.get("message", {})
+            
+            # Ollama native reasoning models stream thoughts here
+            if "thinking" in msg and msg["thinking"]:
+                yield ThinkingChunk(msg["thinking"])
+                
             if "content" in msg and msg["content"]:
                 text += msg["content"]
                 yield TextChunk(msg["content"])
