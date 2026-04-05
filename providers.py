@@ -282,7 +282,10 @@ def messages_to_openai(messages: list) -> list:
         role = m["role"]
 
         if role == "user":
-            result.append({"role": "user", "content": m["content"]})
+            msg_out = {"role": "user", "content": m["content"]}
+            if m.get("images"):
+                msg_out["images"] = m["images"]
+            result.append(msg_out)
 
         elif role == "assistant":
             msg: dict = {"role": "assistant", "content": m.get("content") or None}

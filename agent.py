@@ -70,7 +70,12 @@ def run(
         cancel_check: callable returning True to abort the loop early
     """
     # Append user turn in neutral format
-    state.messages.append({"role": "user", "content": user_message})
+    user_msg = {"role": "user", "content": user_message}
+    # Attach pending image from /image command if present
+    pending_img = config.pop("_pending_image", None)
+    if pending_img:
+        user_msg["images"] = [pending_img]
+    state.messages.append(user_msg)
 
     # Inject runtime metadata into config so tools (e.g. Agent) can access it
     config = {**config, "_depth": depth, "_system_prompt": system_prompt}
