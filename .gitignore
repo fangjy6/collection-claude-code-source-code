@@ -4,3 +4,5 @@ __pycache__/
 build/
 dist/
 debug_payload.json
+agent_old_ideas.py
+brainstorm_outputs/
