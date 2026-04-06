@@ -21,7 +21,7 @@ English | [中文](https://github.com/SafeRL-Lab/nano-claude-code/blob/main/docs
  <img src="https://github.com/SafeRL-Lab/nano-claude-code/blob/main/docs/demo.gif" width="850"/> 
  </div>
 <div align=center>
-<center style="color:#000000;text-decoration:underline"> </center>
+<center style="color:#000000;text-decoration:underline">Simple Task Excution</center>
  </div>
 
 
