@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-Nano Claude Code — Minimal Python implementation of Claude Code.
+ClawNest — Minimal Python implementation of Claude Code.
 
 Usage:
-  python nano_claude.py [options] [prompt]
+  python clawnest.py [options] [prompt]
 
 Options:
   -p, --print          Non-interactive: run prompt and exit (also --print-output)
@@ -55,7 +55,7 @@ Slash commands in REPL:
   /cloudsave        Upload current session to GitHub Gist
   /cloudsave push [desc]     Upload with optional description
   /cloudsave auto on|off     Toggle auto-upload on exit
-  /cloudsave list   List your nano-claude-code Gists
+  /cloudsave list   List your clawnest Gists
   /cloudsave load <gist_id>  Download and load a session from Gist
   /exit /quit Exit
 """
@@ -1057,7 +1057,7 @@ def cmd_cloudsave(args: str, state, config) -> bool:
     /cloudsave                 — upload current session to Gist
     /cloudsave push [desc]     — same as above with optional description
     /cloudsave auto on|off     — toggle auto-upload on /exit
-    /cloudsave list            — list your nano-claude-code Gists
+    /cloudsave list            — list your clawnest Gists
     /cloudsave load <gist_id>  — download and load a session from Gist
     """
     from cloudsave import validate_token, upload_session, list_sessions, download_session
@@ -1109,7 +1109,7 @@ def cmd_cloudsave(args: str, state, config) -> bool:
 
     # ── list ───────────────────────────────────────────────────────────────────
     if sub == "list":
-        info("Fetching your nano-claude-code sessions from GitHub Gist…")
+        info("Fetching your clawnest sessions from GitHub Gist…")
         sessions, err_msg = list_sessions(token)
         if err_msg:
             err(err_msg)
@@ -1120,7 +1120,7 @@ def cmd_cloudsave(args: str, state, config) -> bool:
         info(f"Found {len(sessions)} session(s):")
         for s in sessions:
             ts = s["updated_at"][:16].replace("T", " ")
-            desc = s["description"].replace("[nano-claude-code]", "").strip()
+            desc = s["description"].replace("[clawnest]", "").strip()
             print(f"  {clr(s['id'][:8], 'yellow')}…  {clr(ts, 'dim')}  {desc or s['files'][0]}")
         return True
 
@@ -1371,7 +1371,7 @@ def cmd_mcp(args: str, _state, _config) -> bool:
         configs = load_mcp_configs()
         if not configs:
             info("No MCP servers configured.")
-            info("Add servers in ~/.nano_claude/mcp.json or .mcp.json")
+            info("Add servers in ~/.clawnest/mcp.json or .mcp.json")
             info("Example: /mcp add my-git uvx mcp-server-git")
         else:
             info("MCP servers configured but not yet connected. Run /mcp reload")
@@ -2045,7 +2045,7 @@ def _tg_poll_loop(token: str, chat_id: int, config: dict):
     else:
         offset = 0
     # Notify user bot is online
-    _tg_send(token, chat_id, "🟢 nano-claude is online.\nSend me a message and I'll process it.")
+    _tg_send(token, chat_id, "🟢 clawnest is online.\nSend me a message and I'll process it.")
 
     while not _telegram_stop.is_set():
         try:
@@ -2082,7 +2082,7 @@ def _tg_poll_loop(token: str, chat_id: int, config: dict):
                         _telegram_stop.set()
                         break
                     elif tg_cmd == "/start":
-                        _tg_send(token, chat_id, "🟢 nano-claude bridge is active. Send me anything.")
+                        _tg_send(token, chat_id, "🟢 clawnest bridge is active. Send me anything.")
                         continue
                     # Pass nano slash commands through handle_slash
                     slash_cb = config.get("_handle_slash_callback")
@@ -2408,7 +2408,7 @@ def cmd_image(args: str, state, config) -> Union[bool, tuple]:
         from PIL import ImageGrab
         import io, base64
     except ImportError:
-        err("Pillow is required for /image. Install with: pip install nano-claude-code[vision]")
+        err("Pillow is required for /image. Install with: pip install clawnest[vision]")
         if _sys.platform == "linux":
             err("On Linux, clipboard support also requires xclip: sudo apt install xclip")
         return True
@@ -2541,7 +2541,7 @@ _CMD_META: dict[str, tuple[str, list[str]]] = {
     "worker":      ("Auto-implement pending tasks",       []),
     "ssj":         ("SSJ Developer Mode — power menu",    []),
     "telegram":    ("Telegram bot bridge",                ["stop", "status"]),
-    "exit":        ("Exit nano-claude-code",              []),
+    "exit":        ("Exit clawnest",              []),
     "quit":        ("Exit (alias for /exit)",             []),
     "resume":      ("Resume last session",                []),
 }
@@ -2624,7 +2624,7 @@ def repl(config: dict, initial_prompt: str = None):
         prov_clr  = clr(f"({pname})", "dim")
         pmode     = clr(config.get("permission_mode", "auto"), "yellow")
         ver_clr   = clr(f"v{VERSION}", "green")
-        _top_left  = "╭─ Nano Claude Code "
+        _top_left  = "╭─ ClawNest "
         _top_right = " ─────────────────────────╮"
         _box_w     = len(_top_left) + len(f"v{VERSION}") + len(_top_right)
 
@@ -3252,8 +3252,8 @@ def repl(config: dict, initial_prompt: str = None):
 
 def main():
     parser = argparse.ArgumentParser(
-        prog="nano_claude",
-        description="Nano Claude Code — minimal Python Claude Code implementation",
+        prog="clawnest",
+        description="ClawNest — minimal Python Claude Code implementation",
         add_help=False,
     )
     parser.add_argument("prompt", nargs="*", help="Initial prompt (non-interactive)")
@@ -3273,7 +3273,7 @@ def main():
     args = parser.parse_args()
 
     if args.version:
-        print(f"nano claude code v{VERSION}")
+        print(f"clawnest v{VERSION}")
         sys.exit(0)
 
     if args.help:

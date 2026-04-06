@@ -170,8 +170,8 @@ register_tool(ToolDef(
                     "type": "string",
                     "enum": ["user", "project"],
                     "description": (
-                        "'user' (default) = ~/.nano_claude/memory/ shared across projects; "
-                        "'project' = .nano_claude/memory/ local to this project"
+                        "'user' (default) = ~/.clawnest/memory/ shared across projects; "
+                        "'project' = .clawnest/memory/ local to this project"
                     ),
                 },
                 "confidence": {

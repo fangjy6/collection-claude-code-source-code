@@ -11,7 +11,7 @@ import tools as _tools_init  # ensure built-in tools are registered on import
 from providers import stream, AssistantTurn, TextChunk, ThinkingChunk, detect_provider
 from compaction import maybe_compact
 
-# ── Re-export event types (used by nano_claude.py) ────────────────────────
+# ── Re-export event types (used by clawnest.py) ────────────────────────
 __all__ = [
     "AgentState", "run",
     "TextChunk", "ThinkingChunk",

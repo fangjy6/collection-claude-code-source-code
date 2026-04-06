@@ -3,9 +3,9 @@ requires = ["setuptools>=68", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "nano-claude-code"
+name = "clawnest"
 version = "3.05.5"
-description = "Minimal Python implementation of Claude Code"
+description = "ClawNest: A Fast, Hackable Python AI Coding Assistant"
 readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "MIT" }
@@ -21,11 +21,11 @@ voice  = ["sounddevice"]
 vision = ["Pillow"]
 
 [project.scripts]
-nano_claude = "nano_claude:main"
+clawnest = "clawnest:main"
 
 [tool.setuptools]
 py-modules = [
-    "nano_claude",
+    "clawnest",
     "agent",
     "cloudsave",
     "compaction",

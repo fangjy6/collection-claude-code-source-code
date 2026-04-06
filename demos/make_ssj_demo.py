@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Generate animated GIF demo of nano-claude SSJ Developer Mode.
+Generate animated GIF demo of clawnest SSJ Developer Mode.
 Shows: /ssj menu → Brainstorm → TODO viewer → Worker → Exit
 """
 from PIL import Image, ImageDraw, ImageFont
@@ -71,7 +71,7 @@ def draw_frame(lines_segments):
 # ── Reusable blocks ──────────────────────────────────────────────────────
 
 BANNER = [
-    [seg("╭─ Nano Claude Code ──────────────────────────────────────────╮", SUBTEXT)],
+    [seg("╭─ ClawNest ──────────────────────────────────────────╮", SUBTEXT)],
     [seg("│  ", SUBTEXT), seg("Model: ", SUBTEXT), seg("claude-opus-4-6", CYAN, True)],
     [seg("│  ", SUBTEXT), seg("Permissions: ", SUBTEXT), seg("auto", YELLOW, True)],
     [seg("│  Type /help for commands, Ctrl+C to cancel                  │", SUBTEXT)],
@@ -82,7 +82,7 @@ BANNER = [
 def prompt_line(text="", cursor=False):
     cur = "█" if cursor else ""
     return [
-        seg("[nano_claude_code] ", SUBTEXT),
+        seg("[clawnest] ", SUBTEXT),
         seg("» ", CYAN, True),
         seg(text + cur, TEXT),
     ]
@@ -192,7 +192,7 @@ def build_scenes():
     ]
     add(base_menu + [ssj_prompt("1")] + topic_prompt, 500)
 
-    topic = "nano-claude SSJ features"
+    topic = "clawnest SSJ features"
     for i in range(0, len(topic) + 1, 3):
         add(base_menu + [ssj_prompt("1")] + [
             [seg("  Topic (Enter for general): ", CYAN), seg(topic[:i] + ("█" if i < len(topic) else ""), TEXT)],
@@ -204,7 +204,7 @@ def build_scenes():
     # ── 4. Brainstorm spinner ─────────────────────────────────────────────
     add(base_menu + [ssj_prompt("1")] + [
         None,
-        [seg("  ── Brainstorm: ", SUBTEXT), seg("nano-claude SSJ features", CYAN), seg(" ──", SUBTEXT)],
+        [seg("  ── Brainstorm: ", SUBTEXT), seg("clawnest SSJ features", CYAN), seg(" ──", SUBTEXT)],
         None,
         ok_line("Generating 4 topic-appropriate expert personas..."),
         None,
@@ -223,7 +223,7 @@ def build_scenes():
         )
 
     spinner_base = base_menu + [ssj_prompt("1"), None,
-        [seg("  ── Brainstorm: ", SUBTEXT), seg("nano-claude SSJ features", CYAN), seg(" ──", SUBTEXT)],
+        [seg("  ── Brainstorm: ", SUBTEXT), seg("clawnest SSJ features", CYAN), seg(" ──", SUBTEXT)],
         None,
         ok_line("Generating 4 topic-appropriate expert personas..."),
         None,

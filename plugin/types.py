@@ -9,8 +9,8 @@ from typing import Any
 
 
 class PluginScope(str, Enum):
-    USER    = "user"     # ~/.nano_claude/plugins/
-    PROJECT = "project"  # .nano_claude/plugins/ (cwd)
+    USER    = "user"     # ~/.clawnest/plugins/
+    PROJECT = "project"  # .clawnest/plugins/ (cwd)
 
 
 @dataclass

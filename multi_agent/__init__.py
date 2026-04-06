@@ -1,4 +1,4 @@
-"""Multi-agent package for nano-claude-code.
+"""Multi-agent package for clawnest.
 
 Provides:
   - AgentDefinition  — typed agent definition (name, system_prompt, model, tools)

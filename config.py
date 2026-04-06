@@ -1,9 +1,9 @@
-"""Configuration management for nano claude (multi-provider)."""
+"""Configuration management for ClawNest (multi-provider)."""
 import os
 import json
 from pathlib import Path
 
-CONFIG_DIR        = Path.home() / ".nano_claude"
+CONFIG_DIR        = Path.home() / ".clawnest"
 CONFIG_FILE       = CONFIG_DIR  / "config.json"
 HISTORY_FILE      = CONFIG_DIR  / "input_history.txt"
 SESSIONS_DIR      = CONFIG_DIR  / "sessions"

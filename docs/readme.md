@@ -1,1 +1,1 @@
-nano claude code demo
+clawnest demo
