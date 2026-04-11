@@ -1,6 +1,9 @@
 
 # A collection of the newest Claude Code open source
 
+
+> **License and Disclaimer** This repository is for academic research and educational purposes only. All subprojects are built from publicly accessible information. Users are responsible for complying with applicable laws, regulations, and service terms.
+
 > Source archive of Claude Code and different versions of the clean-room Python rewrite research repository
 
 ## 🔥🔥🔥 News (Pacific Time)
@@ -458,7 +461,5 @@ SendMessage(agent_name="my-agent", message="...")
 
 ---
 
-## License and Disclaimer
 
-This repository is for academic research and educational purposes only. All subprojects are built from publicly accessible information. Users are responsible for complying with applicable laws, regulations, and service terms.
 
